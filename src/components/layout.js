@@ -11,6 +11,7 @@ import { useStaticQuery, graphql } from "gatsby"
 
 import Header from "./header"
 import "./layout.css"
+import { Box } from "@chakra-ui/layout"
 
 const Layout = ({ children }) => {
   const data = useStaticQuery(graphql`
@@ -25,15 +26,15 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
+      <Header siteTitle={"Price My 3D Print"} />
       <div
         style={{
           margin: `0 auto`,
-          maxWidth: 960,
+          maxWidth: 1200,
           padding: `0 1.0875rem 1.45rem`,
         }}
       >
-        <main>{children}</main>
+        <Box as="main" mt={8}>{children}</Box>
         <footer
           style={{
             marginTop: `2rem`,

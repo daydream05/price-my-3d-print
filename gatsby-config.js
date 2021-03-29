@@ -16,6 +16,7 @@ module.exports = {
     },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
+    `@chakra-ui/gatsby-plugin`,
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
