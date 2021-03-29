@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <Header siteTitle={"Price My 3D Print"} />
+      <Header siteTitle={"Price my 3D Print"} />
       <div
         style={{
           margin: `0 auto`,
@@ -35,15 +35,6 @@ const Layout = ({ children }) => {
         }}
       >
         <Box as="main" mt={8}>{children}</Box>
-        <footer
-          style={{
-            marginTop: `2rem`,
-          }}
-        >
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.com">Gatsby</a>
-        </footer>
       </div>
     </>
   )

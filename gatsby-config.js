@@ -18,6 +18,22 @@ module.exports = {
     `gatsby-plugin-sharp`,
     `@chakra-ui/gatsby-plugin`,
     {
+      resolve: "gatsby-plugin-next-seo",
+      options: {
+        openGraph: {
+          type: "website",
+          locale: "en_IE",
+          url: "https://www.pricemy3dprint.com/",
+          site_name: "PriceMy3DPrint",
+        },
+        twitter: {
+          handle: "@handle",
+          site: "@site",
+          cardType: "summary_large_image",
+        },
+      },
+    },
+    {
       resolve: `gatsby-plugin-manifest`,
       options: {
         name: `gatsby-starter-default`,

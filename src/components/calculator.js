@@ -38,7 +38,7 @@ import {
   Wrap,
 } from "@chakra-ui/layout"
 
-import { HiOutlineCubeTransparent } from 'react-icons/hi'
+import { HiInformationCircle, HiOutlineCubeTransparent } from 'react-icons/hi'
 
 import DropZone from './dropzone'
 import { ModelViewer } from './model-viewer'
@@ -256,6 +256,18 @@ export const Calculator = () => {
     <div>
       <Grid gridTemplateColumns={["", "", "2fr 1fr"]} gap={6}>
         <Stack spacing={8}>
+          <Flex
+            sx={{ bg: `green.100`, px: 4, py: 4, borderRadius: `8px` }}
+            alignItems="center"
+          >
+            <Text sx={{ mr: 2 }}>
+              <HiInformationCircle />
+            </Text>
+            <Text fontSize="xs">
+              Everything happens on your local browser, so no need to worry
+              about me getting free 3D models.
+            </Text>
+          </Flex>
           <DropZone
             getModelInformation={model => handleModelInformation(model)}
           />
@@ -422,134 +434,142 @@ export const Calculator = () => {
         </Stack>
 
         <VStack spacing={"32px"} alignItems="flex-start">
-          <Stack
-            as="section"
-            borderWidth="1px"
-            shadow="lg"
-            px={4}
-            py={4}
-            spacing={4}
-            borderRadius="8px"
-          >
-            <Heading as="h4" size="md">
-              Material
-            </Heading>
-            <Stack>
-              <HStack>
-                <Text fontSize="sm" sx={{ mr: 3 }}>
-                  Cost:
-                </Text>
-                <Flex alignItems="center" sx={{ position: `relative` }}>
-                  <Input
-                    type="number"
-                    value={materialCost}
-                    onChange={handleMaterialVolumeInput}
-                    px={6}
-                  />
-                  <Text sx={{ position: `absolute`, left: 3 }} opacity={0.75}>
-                    $
+          <VStack spacing={"32px"} sx={{ position: `fixed` }}>
+            <Stack
+              as="section"
+              borderWidth="1px"
+              shadow="lg"
+              px={4}
+              py={4}
+              spacing={4}
+              borderRadius="8px"
+            >
+              <Heading as="h4" size="md">
+                Material
+              </Heading>
+              <Stack>
+                <HStack>
+                  <Text fontSize="sm" sx={{ mr: 3 }}>
+                    Cost:
+                  </Text>
+                  <Flex alignItems="center" sx={{ position: `relative` }}>
+                    <Input
+                      type="number"
+                      value={materialCost}
+                      onChange={handleMaterialVolumeInput}
+                      px={6}
+                    />
+                    <Text sx={{ position: `absolute`, left: 3 }} opacity={0.75}>
+                      $
+                    </Text>
+                  </Flex>
+                </HStack>
+                <HStack>
+                  <Text sx={{ mr: 3 }} fontSize="sm">
+                    Volume (in mL):
+                  </Text>
+                  <Flex position="relative" alignItems="center">
+                    <Input
+                      type="number"
+                      value={materialVolume}
+                      onChange={e => setMaterialVolume(e.target.value)}
+                    />
+                    <Text
+                      sx={{ position: `absolute`, right: 3 }}
+                      opacity={0.75}
+                    >
+                      mL
+                    </Text>
+                  </Flex>
+                </HStack>
+                <Flex justifyContent="space-between">
+                  <Text fontSize="sm">Cost per mL:</Text>
+                  <Text fontSize="sm">
+                    ${parseFloat(materialCost / materialVolume).toFixed(4)} / mL
                   </Text>
                 </Flex>
-              </HStack>
-              <HStack>
-                <Text sx={{ mr: 3 }} fontSize="sm">
-                  Volume (in mL):
-                </Text>
-                <Flex position="relative" alignItems="center">
-                  <Input
-                    type="number"
-                    value={materialVolume}
-                    onChange={e => setMaterialVolume(e.target.value)}
-                  />
-                  <Text sx={{ position: `absolute`, right: 3 }} opacity={0.75}>
+                <Divider />
+                <Flex alignItems="center" justifyContent="space-between">
+                  <Heading as="h4" fontWeight="normal" size="xs">
+                    Total Material Volume:
+                  </Heading>
+                  <Text fontSize="sm">
+                    {numberFormatter.format(
+                      totalMaterialVolumeUsed.toFixed(2) / 1000
+                    )}{" "}
                     mL
                   </Text>
                 </Flex>
-              </HStack>
-              <Flex justifyContent="space-between">
-                <Text fontSize="sm">Cost per mL:</Text>
-                <Text fontSize="sm">
-                  ${parseFloat(materialCost / materialVolume).toFixed(4)} / mL
-                </Text>
-              </Flex>
-              <Divider />
-              <Flex alignItems="center" justifyContent="space-between">
-                <Heading as="h4" fontWeight="normal" size="xs">
-                  Total Material Volume:
-                </Heading>
-                <Text fontSize="sm">
-                  {numberFormatter.format(
-                    totalMaterialVolumeUsed.toFixed(2) / 1000
-                  )}{" "}
-                  mL
-                </Text>
-              </Flex>
-              <Flex alignItems="center" justifyContent="space-between">
-                <Heading as="h4" size="xs">
-                  Total Material Cost
-                </Heading>
-                <p>{formatter.format(totalMaterialCost)}</p>
-              </Flex>
+                <Flex alignItems="center" justifyContent="space-between">
+                  <Heading as="h4" size="xs">
+                    Total Material Cost
+                  </Heading>
+                  <p>{formatter.format(totalMaterialCost)}</p>
+                </Flex>
+              </Stack>
             </Stack>
-          </Stack>
-          <Stack
-            as="section"
-            borderWidth="1px"
-            shadow="lg"
-            px={4}
-            py={4}
-            spacing={4}
-            borderRadius="8px"
-          >
-            <Heading as="h4" size="md">
-              Pricing
-            </Heading>
-            <Stack spacing={4}>
-              <Heading as="h5" size="xs">
-                Profit margin
+            <Stack
+              as="section"
+              borderWidth="1px"
+              shadow="lg"
+              px={4}
+              py={4}
+              spacing={4}
+              borderRadius="8px"
+              width="100%"
+            >
+              <Heading as="h4" size="md">
+                Pricing
               </Heading>
-              <ProfitMarginSelector
-                onChange={value => {
-                  setProfitMargin(parseFloat(value))
-                  setPrice(
-                    (totalMaterialCost / (1 - parseFloat(value))).toFixed(2)
-                  )
-                }}
-              />
-              <div>
-                <ProfitMarginSlider
-                  value={parseInt(profitMargin * 100)}
+              <Stack spacing={4}>
+                <Heading as="h5" size="xs">
+                  Profit margin
+                </Heading>
+                <ProfitMarginSelector
                   onChange={value => {
-                    setProfitMargin(parseFloat(value / 100))
+                    setProfitMargin(parseFloat(value))
                     setPrice(
-                      (
-                        totalMaterialCost /
-                        (1 - parseFloat(value / 100))
-                      ).toFixed(2)
+                      (totalMaterialCost / (1 - parseFloat(value))).toFixed(2)
                     )
                   }}
                 />
-              </div>
-              <Stack spacing={3}>
-                <Heading as="h5" sx={{ mr: 3 }} size="xs" fontWeight="bold">
-                  Total Price:
-                </Heading>
-                <HStack position="relative" spacing={3}>
-                  <Flex alignItems="center">
-                    <Text sx={{ position: `absolute`, left: 3, opacity: 0.75 }}>
-                      $
-                    </Text>
-                    <Input
-                      type="number"
-                      value={price}
-                      onChange={e => handlePriceChange(e.target.value)}
-                      px={6}
-                    />
-                  </Flex>
-                </HStack>
+                <div>
+                  <ProfitMarginSlider
+                    value={parseInt(profitMargin * 100)}
+                    onChange={value => {
+                      setProfitMargin(parseFloat(value / 100))
+                      setPrice(
+                        (
+                          totalMaterialCost /
+                          (1 - parseFloat(value / 100))
+                        ).toFixed(2)
+                      )
+                    }}
+                  />
+                </div>
+                <Stack spacing={3}>
+                  <Heading as="h5" sx={{ mr: 3 }} size="xs" fontWeight="bold">
+                    Total Price:
+                  </Heading>
+                  <HStack position="relative" spacing={3}>
+                    <Flex alignItems="center">
+                      <Text
+                        sx={{ position: `absolute`, left: 3, opacity: 0.75 }}
+                      >
+                        $
+                      </Text>
+                      <Input
+                        type="number"
+                        value={price}
+                        onChange={e => handlePriceChange(e.target.value)}
+                        px={6}
+                      />
+                    </Flex>
+                  </HStack>
+                </Stack>
               </Stack>
             </Stack>
-          </Stack>
+          </VStack>
         </VStack>
       </Grid>
       <ModelViewer
