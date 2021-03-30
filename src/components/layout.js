@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <Header siteTitle={"Price my 3D Print"} />
+      <Header siteTitle={"PriceMy3DPrint"} />
       <div
         style={{
           margin: `0 auto`,
