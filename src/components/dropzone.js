@@ -108,9 +108,9 @@ const DropZone = props => {
           alignItems="center"
           height="100%"
         >
-          <Text fontSize="sm">Drop your file or click here</Text>
+          <Text fontSize="sm">Drag and drop your files or click here</Text>
           <Text fontSize="xs">
-            We only accept .STL and .OBJ files under 150Mb
+            Only works with .STL and .OBJ files under 150Mb
           </Text>
         </Flex>
       </Box>

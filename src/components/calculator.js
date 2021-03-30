@@ -38,7 +38,7 @@ import {
   Wrap,
 } from "@chakra-ui/layout"
 
-import { HiInformationCircle, HiOutlineCubeTransparent } from 'react-icons/hi'
+import { HiInformationCircle, HiOutlineCubeTransparent, HiShieldExclamation } from 'react-icons/hi'
 
 import DropZone from './dropzone'
 import { ModelViewer } from './model-viewer'
@@ -68,8 +68,6 @@ export const Calculator = () => {
       })
 
       const fixedRunningTotal = parseFloat(runningTotal.toFixed(2))
-
-      console.log(runningTotal)
 
       setTotalMaterialCost(fixedRunningTotal)
       setTotalMaterialVolumeUsed(runningTotalForMaterialVolume)
@@ -135,6 +133,30 @@ export const Calculator = () => {
         unit: "mm",
       },
     ])
+
+        setModels(prev => [
+          ...prev,
+          {
+            bufferGeometry: model.geometry,
+            dimensions: {
+              x: model.dimensions.x,
+              y: model.dimensions.y,
+              z: model.dimensions.z,
+            },
+            fileBlob: model.fileBlob,
+            name: model.fileName,
+            volume: model.volume,
+            materialCostPerModel: calculateMaterialCostPerModel({
+              modelVolume: model.volume,
+              modelQuantity: model.quantity,
+              modelUnit: model.unit,
+              materialVolume: materialVolume,
+              materialCost: materialCost,
+            }),
+            quantity: 1,
+            unit: "mm",
+          },
+        ])
   }
 
   const calculateMaterialCostPerModel = ({
@@ -254,24 +276,26 @@ export const Calculator = () => {
 
   return (
     <div>
-      <Grid gridTemplateColumns={["", "", "2fr 1fr"]} gap={6}>
-        <Stack spacing={8}>
-          <Flex
-            sx={{ bg: `green.100`, px: 4, py: 4, borderRadius: `8px` }}
-            alignItems="center"
-          >
-            <Text sx={{ mr: 2 }}>
-              <HiInformationCircle />
-            </Text>
-            <Text fontSize="xs">
-              Everything happens on your local browser, so no need to worry
-              about me getting free 3D models.
-            </Text>
-          </Flex>
+      <Grid gridTemplateColumns={["", "", "1fr 1fr", "600px auto"]} gap={6}>
+        <Stack spacing={5}>
+          <Stack>
+            <Flex
+              sx={{ bg: `green.100`, px: 4, py: 4, borderRadius: `8px` }}
+              alignItems="center"
+            >
+              <Text sx={{ mr: 2 }}>
+                <HiInformationCircle />
+              </Text>
+              <Text fontSize="xs">
+                Everything happens on your local browser, so no need to worry
+                about me stealing your 3D models.
+              </Text>
+            </Flex>
+          </Stack>
           <DropZone
             getModelInformation={model => handleModelInformation(model)}
           />
-          <Stack gridColumn={1} spacing={3}>
+          <Stack gridColumn={1} spacing={5}>
             <Flex justifyContent="flex-end">
               <Button colorScheme="red" onClick={handleRemoveAllModels}>
                 Remove all
@@ -286,7 +310,7 @@ export const Calculator = () => {
                       display: [`flex`, `flex`, `flex`, `grid`],
                       flexDirection: `column`,
                     }}
-                    shadow="sm"
+                    shadow="lg"
                     borderWidth="1px"
                     borderRadius={8}
                     key={id}
@@ -323,27 +347,29 @@ export const Calculator = () => {
                         position: `relative`,
                       }}
                     >
-                      <Text fontWeight="bold">
-                        <span sx={{ fontWeight: `bold` }}>{model.name}</span>
-                      </Text>
+                      <Stack>
+                        <Text fontWeight="bold" lineHeight={1}>
+                          {model.name}
+                        </Text>
 
-                      <Text fontSize="xs">
-                        <Text
-                          as="span"
-                          fontWeight="bold"
-                          color="blackAlpha.700"
-                        >
-                          Volume:
+                        <Text fontSize="xs">
+                          <Text
+                            as="span"
+                            fontWeight="bold"
+                            color="blackAlpha.700"
+                          >
+                            Volume:
+                          </Text>
+                          <Text fontSize="xs" sx={{ ml: 2 }} as="span">
+                            {numberFormatter.format(
+                              parseFloat(
+                                (model.volume / 1000) * model.quantity
+                              ).toFixed(2)
+                            )}{" "}
+                            mL
+                          </Text>
                         </Text>
-                        <Text fontSize="xs" sx={{ ml: 2 }} as="span">
-                          {numberFormatter.format(
-                            parseFloat(
-                              (model.volume / 1000) * model.quantity
-                            ).toFixed(2)
-                          )}{" "}
-                          mL
-                        </Text>
-                      </Text>
+                      </Stack>
                       <Flex alignItems="center">
                         <Text fontSize="xs">
                           <Text
@@ -382,6 +408,11 @@ export const Calculator = () => {
                         "2 / 2 / auto / auto",
                       ]}
                       px={3}
+                      sx={{
+                        display: `flex`,
+                        flexDirection: `column`,
+                        justifyContent: `flex-end`,
+                      }}
                     >
                       <Grid
                         gridTemplateColumns={["", "", "", "1fr"]}
@@ -391,13 +422,13 @@ export const Calculator = () => {
                         <Flex>
                           <Stat>
                             <StatLabel>Cost</StatLabel>
-                            <StatNumber fontSize="md">
+                            <StatNumber fontSize="md" color="red.500">
                               {formatter.format(model.materialCostPerModel)}
                             </StatNumber>
                           </Stat>
                           <Stat>
                             <StatLabel>Price</StatLabel>
-                            <StatNumber fontSize="md">
+                            <StatNumber fontSize="md" color="green.500">
                               {formatter.format(
                                 calculatePrice({
                                   cost: model.materialCostPerModel,
@@ -433,8 +464,8 @@ export const Calculator = () => {
           </Stack>
         </Stack>
 
-        <VStack spacing={"32px"} alignItems="flex-start">
-          <VStack spacing={"32px"} sx={{ position: `fixed` }}>
+        <VStack spacing={"32px"} alignItems="center">
+          <VStack spacing={"32px"}>
             <Stack
               as="section"
               borderWidth="1px"
@@ -458,6 +489,7 @@ export const Calculator = () => {
                       value={materialCost}
                       onChange={handleMaterialVolumeInput}
                       px={6}
+                      bg="gray.200"
                     />
                     <Text sx={{ position: `absolute`, left: 3 }} opacity={0.75}>
                       $
@@ -473,6 +505,7 @@ export const Calculator = () => {
                       type="number"
                       value={materialVolume}
                       onChange={e => setMaterialVolume(e.target.value)}
+                      bg="gray.200"
                     />
                     <Text
                       sx={{ position: `absolute`, right: 3 }}
@@ -502,9 +535,11 @@ export const Calculator = () => {
                 </Flex>
                 <Flex alignItems="center" justifyContent="space-between">
                   <Heading as="h4" size="xs">
-                    Total Material Cost
+                    Total Material Cost:
                   </Heading>
-                  <p>{formatter.format(totalMaterialCost)}</p>
+                  <Text color="red.600">
+                    {formatter.format(totalMaterialCost)}
+                  </Text>
                 </Flex>
               </Stack>
             </Stack>
@@ -553,9 +588,7 @@ export const Calculator = () => {
                   </Heading>
                   <HStack position="relative" spacing={3}>
                     <Flex alignItems="center">
-                      <Text
-                        sx={{ position: `absolute`, left: 3, opacity: 0.75 }}
-                      >
+                      <Text sx={{ position: `absolute`, left: 3, zIndex: 1 }}>
                         $
                       </Text>
                       <Input
@@ -563,6 +596,11 @@ export const Calculator = () => {
                         value={price}
                         onChange={e => handlePriceChange(e.target.value)}
                         px={6}
+                        size="lg"
+                        backgroundColor={`gray.200`}
+                        sx={{ position: `relative` }}
+                        fontWeight="bold"
+                        fontSize="2xl"
                       />
                     </Flex>
                   </HStack>
@@ -625,7 +663,10 @@ const RadioCard = (props) => {
   const checkbox = getCheckboxProps()
 
   return (
-    <Box as="label">
+    <Box
+      as="label"
+      sx={{ width: `100%`, display: `flex`, justifyContent: `center` }}
+    >
       <input {...input} />
       <Box
         {...checkbox}
@@ -633,6 +674,7 @@ const RadioCard = (props) => {
         borderWidth="1px"
         borderRadius="md"
         boxShadow="md"
+        width="100%"
         _checked={{
           bg: "teal.600",
           color: "white",
@@ -644,10 +686,10 @@ const RadioCard = (props) => {
           color: "white",
           borderColor: "teal.600",
         }}
-        px={5}
+        px={4}
         py={3}
       >
-        {props.children}
+        <Text textAlign="center">{props.children}</Text>
       </Box>
     </Box>
   )

@@ -68,9 +68,6 @@ export const ModelViewer = ({ isOpen, onClose, models, startingModelIndex }) => 
     onClose()
   }
 
-  console.log(model)
-
-
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>

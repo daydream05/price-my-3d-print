@@ -10,8 +10,8 @@ import PropTypes from "prop-types"
 import { useStaticQuery, graphql } from "gatsby"
 
 import Header from "./header"
-import "./layout.css"
-import { Box } from "@chakra-ui/layout"
+import { Box, Container, Text } from "@chakra-ui/layout"
+import { MailinglistForm } from "./mailinglist-form"
 
 const Layout = ({ children }) => {
   const data = useStaticQuery(graphql`
@@ -32,10 +32,27 @@ const Layout = ({ children }) => {
           margin: `0 auto`,
           maxWidth: 1200,
           padding: `0 1.0875rem 1.45rem`,
+          minHeight: `calc(100vh - 64px - 130px)`,
+          paddingTop: `32px`,
+          paddingBottom: `64px`,
         }}
       >
-        <Box as="main" mt={8}>{children}</Box>
+        <Box as="main">
+          {children}
+        </Box>
       </div>
+      <footer>
+        <Box sx={{ py: `64px`, px: 4, bg: `gray.900` }}>
+          <Container>
+            <Box>
+              <Text fontSize="xs" mb={2} color="white">
+                Product updates right to your mailbox. No spam attached.
+              </Text>
+              <MailinglistForm />
+            </Box>
+          </Container>
+        </Box>
+      </footer>
     </>
   )
 }

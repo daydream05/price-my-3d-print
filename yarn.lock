@@ -1646,6 +1646,11 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@feedback-fish/react@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@feedback-fish/react/-/react-1.2.1.tgz#b4d226f310df936517e9e5e82397806a5df4e2d8"
+  integrity sha512-4YFD2hE93xBIT/Ko0x0l6UB0OyaxJcWKLGrnznsUVoLE5Q9vB8I1LEbMySYyuvbU9ul3yM3FjGkVZhYVPdwEyA==
+
 "@gatsbyjs/reach-router@^1.3.6":
   version "1.3.6"
   resolved "https://registry.yarnpkg.com/@gatsbyjs/reach-router/-/reach-router-1.3.6.tgz#4e8225836959be247890b66f21a3198a0589e34d"
@@ -4547,6 +4552,14 @@ convert-source-map@^1.5.0, convert-source-map@^1.7.0:
   integrity sha512-4FJkXzKXEDB1snCFZlLP4gpC3JILicCpGbzG9f9G7tGqGCzETQ2hWPrcinA9oU4wtf2biUaEH5065UnMeR33oA==
   dependencies:
     safe-buffer "~5.1.1"
+
+convertkit-react@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/convertkit-react/-/convertkit-react-1.5.0.tgz#d4840a0d86445cc41650bb3880d71d8aa3af6589"
+  integrity sha512-i3/0/J671QZAsSKHr/BHKESkvuSd/jOK/TfgPOPoF5BFipVS82SKhnw+xmdfunUUWPpMrkaN0F4f5VnBy0FfNg==
+  dependencies:
+    prop-types "^15.7.2"
+    react "^17.0.1"
 
 cookie-signature@1.0.6:
   version "1.0.6"
