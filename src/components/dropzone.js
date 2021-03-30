@@ -21,7 +21,18 @@ const DropZone = props => {
     getIsFileRejected && getIsFileRejected(isFileRejected)
   }, [isFileRejected])
 
+  const callAnalytics = () => {
+    typeof window !== "undefined" &&
+      window.gtag("event", "click", {
+        category: `calculator`,
+        action: `FileAdded`,
+        label: `3D Printing Calculator`,
+      })
+  }
+
+
   const onDrop = useCallback(acceptedFiles => {
+    callAnalytics()
     acceptedFiles.forEach((file, id) => {
       const reader = new FileReader()
       // We limit to 100 Mb
