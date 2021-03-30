@@ -40,7 +40,7 @@ const Header = ({ siteTitle }) => (
           </Link>
         </div>
         <FeedbackFish projectId="fe288f8d4c1fdc">
-          <Button>Send feedback</Button>
+          <Button colorScheme="yellow">Send feedback</Button>
         </FeedbackFish>
       </Flex>
     </Container>
