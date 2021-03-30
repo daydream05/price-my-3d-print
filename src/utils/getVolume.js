@@ -16,7 +16,7 @@ export const getVolume = geometry => {
     sum += signedVolumeOfTriangle(p1, p2, p3)
   }
 
-  return parseFloat(sum).toFixed(2)
+  return Math.abs(parseFloat(sum).toFixed(2))
 }
 
 const signedVolumeOfTriangle = (p1, p2, p3) => {

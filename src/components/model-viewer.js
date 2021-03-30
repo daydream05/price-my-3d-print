@@ -70,7 +70,7 @@ export const ModelViewer = ({ isOpen, onClose, models, startingModelIndex }) => 
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} motionPreset="none">
         <ModalOverlay />
         <ModalContent
           sx={{

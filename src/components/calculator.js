@@ -52,6 +52,10 @@ export const Calculator = () => {
   const [totalMaterialVolumeUsed, setTotalMaterialVolumeUsed] = useState(0)
   const [price, setPrice] = useState(0)
   const [profitMargin, setProfitMargin] = useState(0)
+  const [postProcessingTime, setPostProcessingTime] = useState(0)
+  const [postProcessingLaborCostPerHour, setPostProcessingLaborCostPerHour]  = useState(15)
+  const [preparationTime, setPreparationTime] = useState(0)
+  const [preparationLaborCostPerHour, setPreparationLaborCostPerHour]  = useState(15)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -105,9 +109,10 @@ export const Calculator = () => {
 
   useEffect(() => {
     if (models.length > 0) {
-      setPrice((totalMaterialCost / (1 - parseFloat(profitMargin))).toFixed(2))
+      const totalCost = calculateTotalCost() 
+        setPrice(parseFloat(totalCost / (1 - profitMargin)).toFixed(2))
     }
-  }, [materialCost, materialVolume, models, totalMaterialCost])
+  }, [materialCost, materialVolume, models, totalMaterialCost, preparationTime, preparationLaborCostPerHour, postProcessingTime, postProcessingLaborCostPerHour])
 
   const handleModelInformation = model => {
     setModels(prev => [
@@ -246,13 +251,9 @@ export const Calculator = () => {
   }
 
   const handlePriceChange = (value) => {
-    setPrice(value)
+    setPrice(parseFloat(value))
     const profitMargin = calculateProfitMargin({ revenue: value, cost: totalMaterialCost })
     setProfitMargin(profitMargin)
-  }
-
-  const handleGeneratePrice = () => {
-    setPrice((totalMaterialCost / (1 - parseFloat(profitMargin))).toFixed(2))
   }
 
   const calculateProfitMargin = ({ revenue, cost }) => {
@@ -266,6 +267,14 @@ export const Calculator = () => {
     return (cost / (1 - parseFloat(margin))).toFixed(2)
   }
 
+  const calculateTotalLaborCost = () => {
+    return (preparationLaborCostPerHour * preparationTime) + (postProcessingTime * postProcessingLaborCostPerHour)
+  }
+
+  const calculateTotalCost = () => {
+    return calculateTotalLaborCost() + totalMaterialCost
+  }
+
 
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -274,9 +283,14 @@ export const Calculator = () => {
 
   const numberFormatter = new Intl.NumberFormat()
 
+  const formatDollars = val => `$` + val
+  const parseDollars = val => val.replace(/^\$/, "")
+
+  console.log(calculateTotalCost())
+
   return (
     <div>
-      <Grid gridTemplateColumns={["", "", "1fr 1fr", "600px auto"]} gap={6}>
+      <Grid gridTemplateColumns={["", "", "1fr 1fr", "1fr 400px"]} gap={`64px`}>
         <Stack spacing={5}>
           <Stack>
             <Flex
@@ -286,9 +300,9 @@ export const Calculator = () => {
               <Text sx={{ mr: 2 }}>
                 <HiInformationCircle />
               </Text>
-              <Text fontSize="xs">
+              <Text fontSize="sm">
                 Everything happens on your local browser, so no need to worry
-                about me stealing your 3D models.
+                about me stealing your 3D models and printing them for myself.
               </Text>
             </Flex>
           </Stack>
@@ -348,19 +362,14 @@ export const Calculator = () => {
                       }}
                     >
                       <Stack>
-                        <Text fontWeight="bold" lineHeight={1}>
+                        <Text fontWeight="bold" lineHeight={1} mb={5}>
                           {model.name}
                         </Text>
-
-                        <Text fontSize="xs">
-                          <Text
-                            as="span"
-                            fontWeight="bold"
-                            color="blackAlpha.700"
-                          >
+                        <Text fontSize="sm">
+                          <Text as="span" fontWeight="bold">
                             Volume:
                           </Text>
-                          <Text fontSize="xs" sx={{ ml: 2 }} as="span">
+                          <Text fontSize="sm" sx={{ ml: 2 }} as="span">
                             {numberFormatter.format(
                               parseFloat(
                                 (model.volume / 1000) * model.quantity
@@ -371,13 +380,8 @@ export const Calculator = () => {
                         </Text>
                       </Stack>
                       <Flex alignItems="center">
-                        <Text fontSize="xs">
-                          <Text
-                            as="span"
-                            mr={2}
-                            fontWeight="bold"
-                            color="blackAlpha.700"
-                          >
+                        <Text fontSize="sm">
+                          <Text as="span" mr={2} fontWeight="bold">
                             Dimensions:
                           </Text>
                           {model.dimensions.x} x {model.dimensions.y} x{" "}
@@ -387,9 +391,9 @@ export const Calculator = () => {
                           value={model.unit}
                           onChange={e => handleUnitChange(e.target.value, id)}
                           width="auto"
-                          size="xs"
+                          size="sn"
                           ml={2}
-                          fontSize="xs"
+                          fontSize="sm"
                         >
                           <option value="mm">mm</option>
                           <option value="in">in</option>
@@ -400,72 +404,22 @@ export const Calculator = () => {
                         sx={{ position: `absolute`, top: 0, right: 0 }}
                         onClick={() => handleRemoveModel(id)}
                       />
-                    </GridItem>
-                    <GridItem
-                      gridArea={[
-                        "3 / span 2 / auto / auto",
-                        "3 / span 2 / auto / auto",
-                        "2 / 2 / auto / auto",
-                      ]}
-                      px={3}
-                      sx={{
-                        display: `flex`,
-                        flexDirection: `column`,
-                        justifyContent: `flex-end`,
-                      }}
-                    >
-                      <Grid
-                        gridTemplateColumns={["", "", "", "1fr"]}
-                        gap={4}
-                        alignItems="center"
-                      >
-                        <Flex>
-                          <Stat>
-                            <StatLabel>Cost</StatLabel>
-                            <StatNumber fontSize="md" color="red.500">
-                              {formatter.format(model.materialCostPerModel)}
-                            </StatNumber>
-                          </Stat>
-                          <Stat>
-                            <StatLabel>Price</StatLabel>
-                            <StatNumber fontSize="md" color="green.500">
-                              {formatter.format(
-                                calculatePrice({
-                                  cost: model.materialCostPerModel,
-                                  margin: profitMargin,
-                                })
-                              )}
-                            </StatNumber>
-                          </Stat>
-                          <Flex alignItems="center" flex="1">
-                            <Text>=</Text>
-                          </Flex>
-                          <Stat>
-                            <StatLabel>Profit</StatLabel>
-                            <Flex>
-                              <StatNumber fontSize="md">
-                                {formatter.format(
-                                  Math.abs(
-                                    calculatePrice({
-                                      cost: model.materialCostPerModel,
-                                      margin: profitMargin,
-                                    }) - model.materialCostPerModel
-                                  )
-                                )}
-                              </StatNumber>
-                            </Flex>
-                          </Stat>
-                        </Flex>
-                      </Grid>
+                      <Flex>
+                        <Text as="span" mr={2} fontWeight="bold" fontSize="sm">
+                          Material cost:{" "}
+                          <Text as="span" color="red.600">
+                            {formatter.format(model.materialCostPerModel)}
+                          </Text>
+                        </Text>
+                      </Flex>
                     </GridItem>
                   </Grid>
                 )
               })}
           </Stack>
         </Stack>
-
-        <VStack spacing={"32px"} alignItems="center">
-          <VStack spacing={"32px"}>
+        <Stack spacing={"32px"}>
+          <Stack spacing={"32px"}>
             <Stack
               as="section"
               borderWidth="1px"
@@ -476,11 +430,11 @@ export const Calculator = () => {
               borderRadius="8px"
             >
               <Heading as="h4" size="md">
-                Material
+                Material Cost
               </Heading>
-              <Stack>
+              <Stack spacing={3}>
                 <HStack>
-                  <Text fontSize="sm" sx={{ mr: 3 }}>
+                  <Text fontSize="sm" sx={{ mr: 3 }} fontWeight="bold">
                     Cost:
                   </Text>
                   <Flex alignItems="center" sx={{ position: `relative` }}>
@@ -489,7 +443,7 @@ export const Calculator = () => {
                       value={materialCost}
                       onChange={handleMaterialVolumeInput}
                       px={6}
-                      bg="gray.200"
+                      bg="gray.100"
                     />
                     <Text sx={{ position: `absolute`, left: 3 }} opacity={0.75}>
                       $
@@ -497,7 +451,7 @@ export const Calculator = () => {
                   </Flex>
                 </HStack>
                 <HStack>
-                  <Text sx={{ mr: 3 }} fontSize="sm">
+                  <Text sx={{ mr: 3 }} fontSize="sm" fontWeight="bold">
                     Volume (in mL):
                   </Text>
                   <Flex position="relative" alignItems="center">
@@ -505,7 +459,7 @@ export const Calculator = () => {
                       type="number"
                       value={materialVolume}
                       onChange={e => setMaterialVolume(e.target.value)}
-                      bg="gray.200"
+                      bg="gray.100"
                     />
                     <Text
                       sx={{ position: `absolute`, right: 3 }}
@@ -516,14 +470,21 @@ export const Calculator = () => {
                   </Flex>
                 </HStack>
                 <Flex justifyContent="space-between">
-                  <Text fontSize="sm">Cost per mL:</Text>
+                  <Text fontSize="sm" fontWeight="bold">
+                    Cost per mL:
+                  </Text>
                   <Text fontSize="sm">
                     ${parseFloat(materialCost / materialVolume).toFixed(4)} / mL
                   </Text>
                 </Flex>
                 <Divider />
                 <Flex alignItems="center" justifyContent="space-between">
-                  <Heading as="h4" fontWeight="normal" size="xs">
+                  <Heading
+                    as="h4"
+                    fontWeight="normal"
+                    size="xs"
+                    fontWeight="bold"
+                  >
                     Total Material Volume:
                   </Heading>
                   <Text fontSize="sm">
@@ -534,11 +495,141 @@ export const Calculator = () => {
                   </Text>
                 </Flex>
                 <Flex alignItems="center" justifyContent="space-between">
-                  <Heading as="h4" size="xs">
+                  <Heading as="h4" size="xs" fontWeight="bold">
                     Total Material Cost:
                   </Heading>
-                  <Text color="red.600">
+                  <Text color="red.600" fontWeight="bold">
                     {formatter.format(totalMaterialCost)}
+                  </Text>
+                </Flex>
+              </Stack>
+            </Stack>
+            <Stack
+              as="section"
+              borderWidth="1px"
+              shadow="lg"
+              px={4}
+              py={4}
+              spacing={4}
+              borderRadius="8px"
+              width="100%"
+            >
+              <Heading as="h4" size="md">
+                Labor Cost
+              </Heading>
+              <Stack>
+                <Heading as="h5" size="xs">
+                  Preparation
+                </Heading>
+                <HStack>
+                  <Stack>
+                    <Text as="label" fontSize="sm">
+                      Time (in hours)
+                    </Text>
+                    <NumberInput
+                      min={0}
+                      onChange={value => setPreparationTime(value)}
+                      value={preparationTime}
+                    >
+                      <NumberInputField background="gray.100" />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </Stack>
+                  <Stack>
+                    <Text as="label" fontSize="sm">
+                      Hourly rate
+                    </Text>
+                    <NumberInput
+                      min={0}
+                      onChange={valueString =>
+                        setPreparationLaborCostPerHour(
+                          parseDollars(valueString)
+                        )
+                      }
+                      value={formatDollars(preparationLaborCostPerHour)}
+                    >
+                      <NumberInputField background="gray.100" />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </Stack>
+                </HStack>
+              </Stack>
+              <Stack>
+                <Heading as="h5" size="xs">
+                  Post-processing
+                </Heading>
+                <HStack>
+                  <Stack>
+                    <Text as="label" fontSize="sm">
+                      Time (in hours)
+                    </Text>
+                    <NumberInput
+                      min={0}
+                      onChange={value => setPostProcessingTime(value)}
+                      value={postProcessingTime}
+                    >
+                      <NumberInputField background="gray.100" />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </Stack>
+                  <Stack>
+                    <Text as="label" fontSize="sm">
+                      Hourly rate
+                    </Text>
+                    <NumberInput
+                      min={0}
+                      onChange={valueString =>
+                        setPostProcessingLaborCostPerHour(
+                          parseDollars(valueString)
+                        )
+                      }
+                      value={formatDollars(postProcessingLaborCostPerHour)}
+                    >
+                      <NumberInputField background="gray.100" />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </Stack>
+                </HStack>
+                <Divider />
+                <Flex alignItems="center" justifyContent="space-between">
+                  <Heading as="h5" size="xs">
+                    Preparation cost:
+                  </Heading>
+                  <Text>
+                    {formatter.format(
+                      preparationLaborCostPerHour * preparationTime
+                    )}
+                  </Text>
+                </Flex>
+                <Flex alignItems="center" justifyContent="space-between">
+                  <Heading as="h5" size="xs">
+                    Post-processing cost:
+                  </Heading>
+                  <Text>
+                    {formatter.format(
+                      postProcessingLaborCostPerHour * postProcessingTime
+                    )}
+                  </Text>
+                </Flex>
+                <Divider />
+                <Flex alignItems="center" justifyContent="space-between">
+                  <Heading as="h5" size="xs">
+                    Total labor cost:
+                  </Heading>
+                  <Text color="red.600" fontWeight="bold">
+                    {formatter.format(calculateTotalLaborCost())}
                   </Text>
                 </Flex>
               </Stack>
@@ -557,37 +648,59 @@ export const Calculator = () => {
                 Pricing
               </Heading>
               <Stack spacing={4}>
-                <Heading as="h5" size="xs">
-                  Profit margin
-                </Heading>
-                <ProfitMarginSelector
-                  onChange={value => {
-                    setProfitMargin(parseFloat(value))
-                    setPrice(
-                      (totalMaterialCost / (1 - parseFloat(value))).toFixed(2)
-                    )
-                  }}
-                />
-                <div>
-                  <ProfitMarginSlider
-                    value={parseInt(profitMargin * 100)}
+                <Stack spacing={3}>
+                  <Heading as="h5" size="xs">
+                    Profit margin
+                  </Heading>
+                  <ProfitMarginSelector
                     onChange={value => {
-                      setProfitMargin(parseFloat(value / 100))
+                      setProfitMargin(parseFloat(value))
                       setPrice(
                         (
-                          totalMaterialCost /
-                          (1 - parseFloat(value / 100))
+                          calculateTotalCost() /
+                          (1 - parseFloat(value))
                         ).toFixed(2)
                       )
                     }}
                   />
-                </div>
+                  <div>
+                    <ProfitMarginSlider
+                      value={parseInt(profitMargin * 100)}
+                      onChange={value => {
+                        setProfitMargin(parseFloat(value / 100))
+                        setPrice(
+                          (
+                            calculateTotalCost() /
+                            (1 - parseFloat(value / 100))
+                          ).toFixed(2)
+                        )
+                      }}
+                    />
+                  </div>
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Heading as="h5" sx={{ mr: 3 }} size="xs" fontWeight="bold">
+                      Total cost:
+                    </Heading>
+                    <Text color="red.600" fontWeight="bold">
+                      {formatter.format(calculateTotalCost())}
+                    </Text>
+                  </Flex>
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Heading as="h5" sx={{ mr: 3 }} size="xs" fontWeight="bold">
+                      Profit:
+                    </Heading>
+                    <Text color="green.600" fontWeight="bold">
+                      {formatter.format(price - calculateTotalCost())}
+                    </Text>
+                  </Flex>
+                </Stack>
+                <Divider />
                 <Stack spacing={3}>
                   <Heading as="h5" sx={{ mr: 3 }} size="xs" fontWeight="bold">
                     Total Price:
                   </Heading>
                   <HStack position="relative" spacing={3}>
-                    <Flex alignItems="center">
+                    <Flex alignItems="center" width="100%">
                       <Text sx={{ position: `absolute`, left: 3, zIndex: 1 }}>
                         $
                       </Text>
@@ -601,14 +714,15 @@ export const Calculator = () => {
                         sx={{ position: `relative` }}
                         fontWeight="bold"
                         fontSize="2xl"
+                        textAlign="right"
                       />
                     </Flex>
                   </HStack>
                 </Stack>
               </Stack>
             </Stack>
-          </VStack>
-        </VStack>
+          </Stack>
+        </Stack>
       </Grid>
       <ModelViewer
         isOpen={isOpen}
