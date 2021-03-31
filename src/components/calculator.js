@@ -286,8 +286,6 @@ export const Calculator = () => {
   const formatDollars = val => `$` + val
   const parseDollars = val => val.replace(/^\$/, "")
 
-  console.log(calculateTotalCost())
-
   return (
     <div>
       <Grid gridTemplateColumns={["", "", "1fr 1fr", "1fr 400px"]} gap={`64px`}>
