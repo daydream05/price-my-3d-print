@@ -37,9 +37,7 @@ const Layout = ({ children }) => {
           paddingBottom: `64px`,
         }}
       >
-        <Box as="main">
-          {children}
-        </Box>
+        <Box as="main">{children}</Box>
       </div>
       <footer>
         <Box sx={{ py: `64px`, px: 4, bg: `gray.900` }}>
@@ -49,6 +47,12 @@ const Layout = ({ children }) => {
                 Product updates right to your mailbox. No spam attached.
               </Text>
               <MailinglistForm />
+            </Box>
+            <Box mt={5}>
+              <Text fontSize="sm" mb={2} color="white" textAlign="center">
+                Made with ❤️ by{" "}
+                <a href="https://twitter.com/vince_parulan" rel="noopener noreferrer nofollow" target="_blank" style={{ textDecoration: `underline`}}>Vince Parulan</a>
+              </Text>
             </Box>
           </Container>
         </Box>

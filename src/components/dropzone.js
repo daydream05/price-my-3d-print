@@ -23,7 +23,7 @@ const DropZone = props => {
 
   const callAnalytics = () => {
     typeof window !== "undefined" &&
-      window.gtag("event", "click", {
+      window.gtag && window.gtag("event", "click", {
         category: `calculator`,
         action: `FileAdded`,
         label: `3D Printing Calculator`,

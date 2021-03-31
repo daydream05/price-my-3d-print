@@ -391,7 +391,7 @@ export const Calculator = () => {
                           value={model.unit}
                           onChange={e => handleUnitChange(e.target.value, id)}
                           width="auto"
-                          size="sn"
+                          size="xs"
                           ml={2}
                           fontSize="sm"
                         >
