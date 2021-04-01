@@ -14,11 +14,6 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
-  Stat,
-  StatArrow,
-  StatHelpText,
-  StatLabel,
-  StatNumber,
   useDisclosure,
   useNumberInput,
   useRadio,
@@ -34,8 +29,6 @@ import {
   HStack,
   Stack,
   Text,
-  VStack,
-  Wrap,
 } from "@chakra-ui/layout"
 
 import { HiInformationCircle, HiOutlineCubeTransparent, HiShieldExclamation } from 'react-icons/hi'
@@ -48,6 +41,7 @@ export const Calculator = () => {
   const [models, setModels] = useState([])
   const [materialVolume, setMaterialVolume] = useState(1000)
   const [materialCost, setMaterialCost] = useState(40.99)
+  const [materialUnit, setMaterialUnit] = useState("mL")
   const [totalMaterialCost, setTotalMaterialCost] = useState(0)
   const [totalMaterialVolumeUsed, setTotalMaterialVolumeUsed] = useState(0)
   const [price, setPrice] = useState(0)
@@ -373,7 +367,7 @@ export const Calculator = () => {
                                 (model.volume / 1000) * model.quantity
                               ).toFixed(2)
                             )}{" "}
-                            mL
+                            {materialUnit}
                           </Text>
                         </Text>
                       </Stack>
@@ -450,29 +444,34 @@ export const Calculator = () => {
                 </HStack>
                 <HStack>
                   <Text sx={{ mr: 3 }} fontSize="sm" fontWeight="bold">
-                    Volume (in mL):
+                    Volume:
                   </Text>
-                  <Flex position="relative" alignItems="center">
+                  <Flex position="relative" alignItems="center" sx={{ flex: 1 }}>
                     <Input
                       type="number"
                       value={materialVolume}
                       onChange={e => setMaterialVolume(e.target.value)}
                       bg="gray.100"
                     />
-                    <Text
-                      sx={{ position: `absolute`, right: 3 }}
-                      opacity={0.75}
-                    >
-                      mL
-                    </Text>
                   </Flex>
+                  <Select
+                    value={materialUnit}
+                    onChange={e => setMaterialUnit(e.target.value)}
+                    width="auto"
+                    size="md"
+                    ml={2}
+                    fontSize="sm"
+                  >
+                    <option value="mL">mL</option>
+                    <option value="grams">grams</option>
+                  </Select>
                 </HStack>
                 <Flex justifyContent="space-between">
                   <Text fontSize="sm" fontWeight="bold">
-                    Cost per mL:
+                    Cost per {materialUnit}:
                   </Text>
                   <Text fontSize="sm">
-                    ${parseFloat(materialCost / materialVolume).toFixed(4)} / mL
+                    ${parseFloat(materialCost / materialVolume).toFixed(4)} / {materialUnit}
                   </Text>
                 </Flex>
                 <Divider />
@@ -489,7 +488,7 @@ export const Calculator = () => {
                     {numberFormatter.format(
                       totalMaterialVolumeUsed.toFixed(2) / 1000
                     )}{" "}
-                    mL
+                    {materialUnit}
                   </Text>
                 </Flex>
                 <Flex alignItems="center" justifyContent="space-between">
